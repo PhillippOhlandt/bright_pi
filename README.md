@@ -1,5 +1,7 @@
 # BrightPi
 
+![Test Status](https://github.com/PhillippOhlandt/bright_pi/actions/workflows/tests.yml/badge.svg)
+
 **TODO: Add description**
 
 ## Installation

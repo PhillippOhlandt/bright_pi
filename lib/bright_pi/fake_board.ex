@@ -4,7 +4,6 @@ defmodule BrightPi.FakeBoard do
   use GenServer
   use BrightPi.Constants
 
-  alias BrightPi.LED
   alias BrightPi.Telemetry
 
   def start_link(opts \\ %{}) do
@@ -15,7 +14,7 @@ defmodule BrightPi.FakeBoard do
     state = %{
       leds_on: [],
       leds_dim: [1, 1, 1, 1, 1, 1, 1, 1],
-      gain: 1
+      gain: 8
     }
 
     Telemetry.board_init(__MODULE__)
@@ -35,7 +34,7 @@ defmodule BrightPi.FakeBoard do
     {:reply, {:ok, state.leds_on}, state}
   end
 
-  def handle_call({:set_leds_dim, leds, dim}, from, state)
+  def handle_call({:set_leds_dim, leds, dim}, _from, state)
       when is_list(leds) and dim in @min_dim..@max_dim do
     new_dim =
       Enum.reduce(leds, state.leds_dim, fn x, acc ->
