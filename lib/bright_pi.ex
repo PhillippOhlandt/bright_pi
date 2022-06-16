@@ -1,6 +1,6 @@
 defmodule BrightPi do
   @moduledoc """
-  BrightPi is a library to talk to the "Pi Supply BrightPi" board
+  BrightPi is a library to talk to the "Pi Supply Bright Pi" board
   featuring 4 white LEDs and 4 pairs of two infrared LEDs.
 
   This library can control the on/off value of each LED or LED pair,

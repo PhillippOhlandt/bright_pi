@@ -3,7 +3,7 @@
 ![Test Status](https://github.com/PhillippOhlandt/bright_pi/actions/workflows/tests.yml/badge.svg)
 ![Latest Version](https://img.shields.io/hexpm/v/bright_pi.svg)
 
-BrightPi is a library to talk to the [Pi Supply BrightPi](https://uk.pi-supply.com/products/bright-pi-bright-white-ir-camera-light-raspberry-pi) board
+BrightPi is a library to talk to the [Pi Supply Bright Pi](https://uk.pi-supply.com/products/bright-pi-bright-white-ir-camera-light-raspberry-pi) board
 featuring 4 white LEDs and 4 pairs of two infrared LEDs.
 
 This library can control the on/off value of each LED or LED pair,
