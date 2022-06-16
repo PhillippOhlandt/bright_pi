@@ -1,5 +1,28 @@
 defmodule BrightPi.Board do
-  @moduledoc false
+  @moduledoc """
+  The (default) implementation for the real I2C powered LED board.
+
+  The board can be set using application configuration, however it is already the default:
+
+      config :bright_pi, board: BrightPi.Board
+
+  It can be started explicitly or via the preferred `BrightPi.board/0` helper function.
+
+      defmodule MyApp.Application do
+        use Application
+
+        @impl true
+        def start(_type, _args) do
+          children = [
+            BrightPi.Board, # explicit
+            BrightPi.board() # preferred
+          ]
+
+          opts = [strategy: :one_for_one, name: MyApp.Supervisor]
+          Supervisor.start_link(children, opts)
+        end
+      end
+  """
 
   use GenServer
   use BrightPi.Constants
@@ -12,10 +35,13 @@ defmodule BrightPi.Board do
   @led_dim_registers [0x02, 0x04, 0x05, 0x07, 0x01, 0x03, 0x06, 0x08]
   @gain_register 0x09
 
+  @doc false
   def start_link(opts \\ %{}) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
+  @doc false
+  @impl true
   def init(%{address: address, i2c_bus_name: bus_name}) do
     {:ok, i2c_ref} = I2C.open(bus_name)
 
@@ -36,6 +62,7 @@ defmodule BrightPi.Board do
     init(%{address: address, i2c_bus_name: bus_name})
   end
 
+  @impl true
   def handle_call({:set_leds, leds}, _from, state) when is_list(leds) do
     with leds_bitstring <- LED.leds_to_bitstring(leds),
          {:ok, leds_on} <-
@@ -49,6 +76,7 @@ defmodule BrightPi.Board do
     end
   end
 
+  @impl true
   def handle_call(:get_leds, _from, state) do
     with {:ok, leds_on} <-
            I2C.write_read(state.i2c_ref, state.address, <<@led_status_register>>, 1),
@@ -59,6 +87,7 @@ defmodule BrightPi.Board do
     end
   end
 
+  @impl true
   def handle_call({:set_leds_dim, leds, dim}, from, state)
       when is_list(leds) and dim in @min_dim..@max_dim do
     registers = leds |> Enum.map(&Enum.at(@led_dim_registers, &1 - 1))
@@ -72,6 +101,7 @@ defmodule BrightPi.Board do
     handle_call(:get_leds_dim, from, state)
   end
 
+  @impl true
   def handle_call(:get_leds_dim, _from, state) do
     result =
       @led_dim_registers
@@ -83,6 +113,7 @@ defmodule BrightPi.Board do
     {:reply, {:ok, result}, state}
   end
 
+  @impl true
   def handle_call({:set_gain, gain}, _from, state) when gain in @min_gain..@max_gain do
     with {:ok, <<gain>>} <-
            I2C.write_read(state.i2c_ref, state.address, [@gain_register, gain], 1) do
@@ -94,6 +125,7 @@ defmodule BrightPi.Board do
     end
   end
 
+  @impl true
   def handle_call(:get_gain, _from, state) do
     with {:ok, <<gain>>} <- I2C.write_read(state.i2c_ref, state.address, <<@gain_register>>, 1) do
       {:reply, {:ok, gain}, state}
@@ -102,10 +134,12 @@ defmodule BrightPi.Board do
     end
   end
 
+  @impl true
   def handle_call(_msg, _from, state) do
     {:reply, :ok, state}
   end
 
+  @impl true
   def handle_cast(_msg, state) do
     {:noreply, state}
   end

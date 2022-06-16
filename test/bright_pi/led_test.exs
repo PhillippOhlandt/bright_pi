@@ -1,5 +1,6 @@
 defmodule BrightPi.LEDTest do
   use ExUnit.Case
+  doctest BrightPi.LED
 
   alias BrightPi.LED
 

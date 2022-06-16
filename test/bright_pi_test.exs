@@ -2,29 +2,29 @@ defmodule BrightPiTest do
   use ExUnit.Case
 
   setup_all do
-    Application.put_env(:bright_pi, :board, BrightPi.FakeBoard)
+    Application.put_env(:bright_pi, :board, BrightPi.VirtualBoard)
     on_exit(fn -> Application.delete_env(:bright_pi, :board) end)
   end
 
   setup do
-    {:ok, _} = start_supervised(BrightPi.FakeBoard)
+    {:ok, _} = start_supervised(BrightPi.VirtualBoard)
     :ok
   end
 
   test "board emits an init telemetry event", %{test: test} do
     attach_telemetry_handler(test, [:bright_pi, :board, :init])
 
-    :ok = stop_supervised(BrightPi.FakeBoard)
-    {:ok, _} = start_supervised(BrightPi.FakeBoard)
+    :ok = stop_supervised(BrightPi.VirtualBoard)
+    {:ok, _} = start_supervised(BrightPi.VirtualBoard)
 
     assert_receive {:telemetry_event, [:bright_pi, :board, :init], %{system_time: _},
                     %{
-                      board: BrightPi.FakeBoard
+                      board: BrightPi.VirtualBoard
                     }}
   end
 
   test "board/0" do
-    assert BrightPi.board() == BrightPi.FakeBoard
+    assert BrightPi.board() == BrightPi.VirtualBoard
   end
 
   test "set_leds/1", %{test: test} do
@@ -36,12 +36,12 @@ defmodule BrightPiTest do
     assert_receive {:telemetry_event, [:bright_pi, :leds, :set],
                     %{system_time: _, leds: [1, 2, 3, 4]},
                     %{
-                      board: BrightPi.FakeBoard
+                      board: BrightPi.VirtualBoard
                     }}
 
     assert_receive {:telemetry_event, [:bright_pi, :leds, :set], %{system_time: _, leds: []},
                     %{
-                      board: BrightPi.FakeBoard
+                      board: BrightPi.VirtualBoard
                     }}
   end
 
@@ -61,13 +61,13 @@ defmodule BrightPiTest do
     assert_receive {:telemetry_event, [:bright_pi, :leds, :dim],
                     %{system_time: _, leds: [1, 2, 3, 4], value: 5},
                     %{
-                      board: BrightPi.FakeBoard
+                      board: BrightPi.VirtualBoard
                     }}
 
     assert_receive {:telemetry_event, [:bright_pi, :leds, :dim],
                     %{system_time: _, leds: [5, 6, 7, 8], value: 10},
                     %{
-                      board: BrightPi.FakeBoard
+                      board: BrightPi.VirtualBoard
                     }}
   end
 
@@ -89,12 +89,12 @@ defmodule BrightPiTest do
 
     assert_receive {:telemetry_event, [:bright_pi, :leds, :gain], %{system_time: _, value: 1},
                     %{
-                      board: BrightPi.FakeBoard
+                      board: BrightPi.VirtualBoard
                     }}
 
     assert_receive {:telemetry_event, [:bright_pi, :leds, :gain], %{system_time: _, value: 15},
                     %{
-                      board: BrightPi.FakeBoard
+                      board: BrightPi.VirtualBoard
                     }}
   end
 
